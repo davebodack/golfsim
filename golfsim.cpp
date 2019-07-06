@@ -16,6 +16,7 @@ class Player {
 public:
 	std::string name;
 	double rating;
+	int pgatourwins;
 	int majorswon;
 	int masterswon;
 	int pgaswon;
@@ -26,6 +27,7 @@ public:
 	Player() {
 		name = "";
 		rating = 0;
+		pgatourwins = 0;
 		majorswon = 0;
 		masterswon = 0;
 		pgaswon = 0;
@@ -59,17 +61,25 @@ Player determine_winner(Player golfers[], int golfernum, int major) {
 		if (randomnum <= 0) {
 			golfers[i].majorswon++;
 			
-			if (major == 1) {
+			if (major == 0) {
+				golfers[i].pgatourwins++;
+				golfers[i].majorswon--;
+			}
+			else if (major == 1) {
 				golfers[i].masterswon++;
+				golfers[i].pgatourwins++;
 			}
 			else if (major == 2) {
 				golfers[i].pgaswon++;
+				golfers[i].pgatourwins++;
 			}
 			else if (major == 3) {
 				golfers[i].usopenswon++;
+				golfers[i].pgatourwins++;
 			}
 			else if (major == 4) {
 				golfers[i].openswon++;
+				golfers[i].pgatourwins++;
 			}
 
 			return golfers[i];
@@ -99,6 +109,9 @@ void sort(Player golfers[], int golfernum) {
 	for (int num = 1; num < golfernum; num++) {
 		for (int i = 0; i < golfernum - num; i++) {
 			if (golfers[i].majorswon < golfers[i+1].majorswon) {
+				swap(golfers[i], golfers[i+1]);
+			}
+			else if ((golfers[i].majorswon == golfers[i+1].majorswon) && (golfers[i].pgatourwins < golfers[i+1].pgatourwins)) {
 				swap(golfers[i], golfers[i+1]);
 			}
 		}
@@ -170,6 +183,8 @@ int main() {
 		int numyears;
 		cin >> numyears;
 
+		int numtournaments = 30;
+
 		if (infile.is_open()) {
 
 			for (int i = 0; i < numyears; i++) {
@@ -182,13 +197,17 @@ int main() {
 				cout << winner.name << " triumphs over golf's ultimate test at the " << i + 2020 << " U.S. Open!" << '\n';
 				winner = determine_winner(golfers, golfernum, 4);
 				cout << winner.name << " is the Champion Golfer of the Year at the " << i + 2020 << " Open Championship!" << '\n';
+				
+				for (int i = 0; i < numtournaments - 4; i++) {
+					winner = determine_winner(golfers, golfernum, 0);
+				}
 			}
 
 			sort(golfers, golfernum);
-			cout << '\n' << "Here are the number of majors these golfers won over " << numyears << " years: " << '\n' << '\n';
+			cout << '\n' << "Here are the results of simulating a career for these golfers of " << numyears << " years: " << '\n' << '\n';
 
 			for (int i = 0; i < golfernum; i++) {
-				cout << golfers[i].name << ": " << golfers[i].majorswon << " majors (" << golfers[i].masterswon << " Masters, " << golfers[i].pgaswon << " PGA Championships, " << golfers[i].usopenswon << " U.S. Opens, " << golfers[i].openswon << " Open Championships won)" << '\n';
+				cout << golfers[i].name << ": " << golfers[i].pgatourwins << " PGA Tour events won, " << golfers[i].majorswon << " majors (" << golfers[i].masterswon << " Masters, " << golfers[i].pgaswon << " PGA Championships, " << golfers[i].usopenswon << " U.S. Opens, " << golfers[i].openswon << " Open Championships)" << '\n';
 			}
 		}
 		
