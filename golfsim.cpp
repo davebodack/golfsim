@@ -149,18 +149,21 @@ int main() {
 	int golfernum = 100;
 	Player golfers[golfernum];			
 	int counter = 0;
-	string name;
-	string lastname;
 
 	//Reads in the names and ratings from the file into the players
 	for (int i = 0; i < golfernum; i++) {
-		infile >> name;
-		infile >> lastname;
-		name += " ";
-		name += lastname;
-		name = name.substr(0, name.length() - 1);
-		golfers[i].name = name;
+		
+		string name = "";
+		while (name.find(":") == string::npos) {
+			string nameinput = "";
+			infile >> nameinput;
+			name.append(nameinput);
+			name.append(" ");
+		}
+
+		golfers[i].name = name.substr(0, name.length() - 2);
 		infile >> golfers[i].rating;
+		cout << golfers[i].name << '\n';
 	}
 
 	if ((input == "Career") || (input == "career")) {
