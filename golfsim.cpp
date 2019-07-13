@@ -16,6 +16,7 @@ class Player {
 public:
 	std::string name;
 	double rating;
+	char nationality;
 	int pgatourwins;
 	int majorswon;
 	int masterswon;
@@ -27,6 +28,7 @@ public:
 	Player() {
 		name = "";
 		rating = 0;
+		nationality = '\0';
 		pgatourwins = 0;
 		majorswon = 0;
 		masterswon = 0;
@@ -135,16 +137,28 @@ int main() {
 
 	using namespace std;
 
-	cout << "Welcome! This is the Historical Golf Legend Simulator. If you'd like to simulate a full career, type 'career'. If you'd like to simulate a match play tournament, type 'match play'.\n";
+	string filename;
+	cout << "Welcome! This is the Historical Golf Legend Simulator. Enter the name of the file which contains data on the golfers you would like to use: \n";
+	cin >> filename;
+	ifstream infile;
+	infile.open(filename.c_str());
+
+	while (!infile.is_open()) {
+		string filename;
+		cout << "Error! Invalid filename entered. Please input the name of a valid file containing data on the golfers you would like to use: \n";
+		cin >> filename;
+		infile.open(filename.c_str());
+	}
+
 	string input;
+	cout << "If you'd like to simulate a full career, type 'career'. If you'd like to simulate a match play tournament, type 'match play'.\n"; 
+	cin.ignore();
 	getline(cin, input);
 
 	while ((input != "Career") && (input != "career") && (input != "match play") && (input != "Match play") && (input != "Match Play")) {
-		cout << "Oops! You entered an invalid input. Try again: to simulate a full career, type 'career'. To simulate match play, type 'match play'." << '\n';
+		cout << "Oops! You entered an invalid input. Try again: to simulate a full career, type 'career'. To simulate match play, type 'match play'.\n";
 		getline(cin, input);
 	}
-
-	ifstream infile("golferratings.txt");
 
 	int golfernum = 100;
 	Player golfers[golfernum];			
@@ -163,7 +177,7 @@ int main() {
 
 		golfers[i].name = name.substr(0, name.length() - 2);
 		infile >> golfers[i].rating;
-		cout << golfers[i].name << '\n';
+		infile >> golfers[i].nationality;
 	}
 
 	if ((input == "Career") || (input == "career")) {
@@ -188,30 +202,27 @@ int main() {
 
 		int numtournaments = 30;
 
-		if (infile.is_open()) {
-
-			for (int i = 0; i < numyears; i++) {
-				
-				Player winner = determine_winner(golfers, golfernum, 1);
-				cout << winner.name << " claims the green jacket at the " << i + 2020 << " Masters!" << '\n';
-				winner = determine_winner(golfers, golfernum, 2);
-				cout << winner.name << " is victorious at the " << i + 2020 << " PGA Championship!" << '\n';
-				winner = determine_winner(golfers, golfernum, 3);
-				cout << winner.name << " triumphs over golf's ultimate test at the " << i + 2020 << " U.S. Open!" << '\n';
-				winner = determine_winner(golfers, golfernum, 4);
-				cout << winner.name << " is the Champion Golfer of the Year at the " << i + 2020 << " Open Championship!" << '\n';
-				
-				for (int i = 0; i < numtournaments - 4; i++) {
-					winner = determine_winner(golfers, golfernum, 0);
-				}
+		for (int i = 0; i < numyears; i++) {
+			
+			Player winner = determine_winner(golfers, golfernum, 1);
+			cout << winner.name << " claims the green jacket at the " << i + 2020 << " Masters!" << '\n';
+			winner = determine_winner(golfers, golfernum, 2);
+			cout << winner.name << " is victorious at the " << i + 2020 << " PGA Championship!" << '\n';
+			winner = determine_winner(golfers, golfernum, 3);
+			cout << winner.name << " triumphs over golf's ultimate test at the " << i + 2020 << " U.S. Open!" << '\n';
+			winner = determine_winner(golfers, golfernum, 4);
+			cout << winner.name << " is the Champion Golfer of the Year at the " << i + 2020 << " Open Championship!" << '\n';
+			
+			for (int i = 0; i < numtournaments - 4; i++) {
+				winner = determine_winner(golfers, golfernum, 0);
 			}
+		}
 
-			sort(golfers, golfernum);
-			cout << '\n' << "Here are the results of simulating a career for these golfers of " << numyears << " years: " << '\n' << '\n';
+		sort(golfers, golfernum);
+		cout << '\n' << "Here are the results of simulating a career for these golfers of " << numyears << " years: " << '\n' << '\n';
 
-			for (int i = 0; i < golfernum; i++) {
-				cout << golfers[i].name << ": " << golfers[i].pgatourwins << " PGA Tour events won, " << golfers[i].majorswon << " majors (" << golfers[i].masterswon << " Masters, " << golfers[i].pgaswon << " PGA Championships, " << golfers[i].usopenswon << " U.S. Opens, " << golfers[i].openswon << " Open Championships)" << '\n';
-			}
+		for (int i = 0; i < golfernum; i++) {
+			cout << golfers[i].name << ": " << golfers[i].pgatourwins << " PGA Tour events won, " << golfers[i].majorswon << " majors (" << golfers[i].masterswon << " Masters, " << golfers[i].pgaswon << " PGA Championships, " << golfers[i].usopenswon << " U.S. Opens, " << golfers[i].openswon << " Open Championships)" << '\n';
 		}
 		
 		infile.close();
@@ -365,4 +376,6 @@ int main() {
 		}
 		cout << '\n';
 	}
+
+	infile.close();
 }
