@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <math.h>
 
+using namespace std;
 
 class Player {
 public:
@@ -24,6 +25,7 @@ public:
 	int usopenswon;
 	int openswon;
 	int numtourneyswon;
+	int nummatcheswon;
 
 	Player() {
 		name = "";
@@ -36,6 +38,7 @@ public:
 		usopenswon = 0;
 		openswon = 0;
 		numtourneyswon = 0;
+		nummatcheswon = 0;
 	}
 };
 
@@ -97,6 +100,27 @@ bool determine_match_winner(Player golfer1, Player golfer2) {
 	return (rand() % matchratingsum) < golfer1.rating;
 }
 
+int determine_hole_winner(Player golfer1, Player golfer2) {
+
+	int ratingtotal = (int) ((golfer1.rating * 2) + (golfer2.rating * 2) + 0.5);
+	int oneononerandnum = (rand() % ratingtotal);
+	cout << "Randnum: " << oneononerandnum << "\n";
+	if (oneononerandnum < golfer1.rating) {
+		cout << "1\n";
+		return 1;
+	}
+	else if (oneononerandnum < (ratingtotal - golfer2.rating)) {
+		cout << "2\n";
+		return 2;
+	}
+	else {
+		cout << "3\n";
+		return 3;
+	}
+
+	return 0;
+}
+
 void swap(Player& x, Player& y) {
 	
 	Player temp;
@@ -133,29 +157,29 @@ void match_sort(Player golfers[], int golfernum) {
 }
 
 
-int main() {
+int main(int argc, char* argv[]) {
 
-	using namespace std;
-
-	string filename;
-	cout << "Welcome! This is the Historical Golf Legend Simulator. Enter the name of the file which contains data on the golfers you would like to use: \n";
-	cin >> filename;
+	cout << "Welcome! This is the Historical Golf Legend Simulator.\n";
 	ifstream infile;
-	infile.open(filename.c_str());
+	
+	if (argc > 1) {
+		infile.open(argv[1]);
+	}
 
-	while (!infile.is_open()) {
-		string filename;
-		cout << "Error! Invalid filename entered. Please input the name of a valid file containing data on the golfers you would like to use: \n";
-		cin >> filename;
-		infile.open(filename.c_str());
+	else {
+		while (!infile.is_open()) {
+			string filename;
+			cout << "Error! No valid filename entered. Please input the name of a valid file containing data on the golfers you would like to use: \n";
+			cin >> filename;
+			infile.open(filename.c_str());
+		}
 	}
 
 	string input;
-	cout << "If you'd like to simulate a full career, type 'career'. If you'd like to simulate a match play tournament, type 'match play'.\n"; 
-	cin.ignore();
+	cout << "If you'd like to simulate a full career, type 'career'. If you'd like to simulate a match play tournament, type 'match play'. If you'd like to draft a golfer and play a match against someone, type 'one on one'.\n"; 
 	getline(cin, input);
 
-	while ((input != "Career") && (input != "career") && (input != "match play") && (input != "Match play") && (input != "Match Play")) {
+	while ((input != "Career") && (input != "career") && (input != "match play") && (input != "Match play") && (input != "Match Play") && (input != "one on one") && (input != "1 on 1") && (input != "One on One") && (input != "One On One")) {
 		cout << "Oops! You entered an invalid input. Try again: to simulate a full career, type 'career'. To simulate match play, type 'match play'.\n";
 		getline(cin, input);
 	}
@@ -375,6 +399,105 @@ int main() {
 			cout << matchgolfersrd1[i].name << ": " << matchgolfersrd1[i].numtourneyswon << " match play tournaments won" << '\n';
 		}
 		cout << '\n';
+	}
+
+	else if ((input == "one on one") || (input != "1 on 1") || (input != "One on One") || (input != "One On One")) {
+		
+		Player player1;
+		Player player2;
+		string playername;
+
+		for (int i = 1; i < 3; i++) {
+			bool foundplayer = false;
+			while (foundplayer == false) {
+				cout << "Player " << i << ": Choose your golfer by typing in their name here: ";
+				getline(cin, playername);
+				for (int j = 0; j < golfernum; j++) {
+					if ((playername == golfers[j].name) && (playername != player1.name)) {
+						if (i == 1) {
+							player1 = golfers[j];
+							foundplayer = true;
+						}
+						else {
+							player2 = golfers[j];
+							foundplayer = true;
+						}
+
+						srand(time(NULL));
+						int randomresponse = rand() % 3;
+						if (randomresponse == 0) {
+							cout << "Good choice, Player " << i << "!\n";
+						}
+						else if (randomresponse == 1) {
+							cout << "Hmm... interesting choice, Player " << i << ".\n";
+						}
+						else {
+							cout << "Let's hope you don't regret that choice, Player " << i << ".\n";
+						}
+					}
+				}
+
+				if ((foundplayer == false) && (playername == player1.name)) {
+					cout << "You can't choose the same golfer as Player 1!\n";
+				}
+
+				else if (foundplayer == false) {
+					cout << "Invalid player name entered.\n";
+				}
+			}	
+		}
+
+		int nummatches;
+		cout << "How many matches between these two would you like to simulate? \n";
+		cin >> nummatches;
+
+		while ((!cin) || (nummatches < 1)) {
+			cout << "Invalid number of matches entered. Please enter a valid number of matches to be simulated:\n";
+			cin >> nummatches;
+		}
+
+		for (int i = 0; i < nummatches; i++) {
+			bool victoryflag = false;
+			int roundsum = 0;
+			int numholesleft = 18;
+			int holeresult = 0;
+			for (int i = 1; i < 19; i++) {
+				if ((abs(roundsum) > numholesleft) && (victoryflag == false)) {
+					if (roundsum < 0) {
+						victoryflag = true;
+						player1.nummatcheswon++;
+						if (nummatches == 1) {
+							cout << player1.name << " defeats " << player2.name << " " << abs(roundsum) << " & " << numholesleft << "!\n";
+						}		
+					}
+					else {
+						victoryflag = true;
+						player2.nummatcheswon++;
+						if (nummatches == 1) {
+							cout << player2.name << " defeats " << player1.name << " " << abs(roundsum) << " & " << numholesleft << "!\n";
+						}	
+					}
+				}
+
+				else {
+					holeresult = determine_hole_winner(player1, player2);
+					numholesleft--;
+					if (holeresult == 1) {
+						roundsum--;
+					}
+					if (holeresult == 3) {
+						roundsum++;
+					}
+				}
+			}
+		}
+
+		if (nummatches > 1) {
+			cout << "\nNumber of matches: " << nummatches << "\n";
+			cout << player1.name << ": " << player1.nummatcheswon << " matches won\n";
+			cout << player2.name << ": " << player2.nummatcheswon << " matches won\n";
+			cout << "Number of ties: " << nummatches - player1.nummatcheswon - player2.nummatcheswon << "\n";
+		}
 	}
 
 	infile.close();
