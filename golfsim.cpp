@@ -17,6 +17,7 @@ class Player {
 public:
 	std::string name;
 	double rating;
+	double matchrating;
 	char nationality;
 	int pgatourwins;
 	int majorswon;
@@ -30,6 +31,7 @@ public:
 	Player() {
 		name = "";
 		rating = 0;
+		matchrating = 0;
 		nationality = '\0';
 		pgatourwins = 0;
 		majorswon = 0;
@@ -96,28 +98,21 @@ Player determine_winner(Player golfers[], int golfernum, int major) {
 
 bool determine_match_winner(Player golfer1, Player golfer2) {
 	
-	int matchratingsum = (int) (golfer1.rating + golfer2.rating + 0.5);
-	return (rand() % matchratingsum) < golfer1.rating;
+	int matchratingsum = (int) (golfer1.matchrating + golfer2.matchrating + 0.5);
+	return (rand() % matchratingsum) < golfer1.matchrating;
 }
 
 int determine_hole_winner(Player golfer1, Player golfer2) {
 
-	int ratingtotal = (int) ((golfer1.rating * 2) + (golfer2.rating * 2) + 0.5);
+	int ratingtotal = (int) ((golfer1.matchrating * 2) + (golfer2.matchrating * 2) + 0.5);
 	int oneononerandnum = (rand() % ratingtotal);
-	cout << "Randnum: " << oneononerandnum << "\n";
-	if (oneononerandnum < golfer1.rating) {
-		cout << "1\n";
+	if (oneononerandnum < golfer1.matchrating) {
 		return 1;
-	}
-	else if (oneononerandnum < (ratingtotal - golfer2.rating)) {
-		cout << "2\n";
+	} else if (oneononerandnum < (ratingtotal - golfer2.matchrating)) {
 		return 2;
-	}
-	else {
-		cout << "3\n";
+	} else {
 		return 3;
 	}
-
 	return 0;
 }
 
@@ -180,7 +175,7 @@ int main(int argc, char* argv[]) {
 	getline(cin, input);
 
 	while ((input != "Career") && (input != "career") && (input != "match play") && (input != "Match play") && (input != "Match Play") && (input != "one on one") && (input != "1 on 1") && (input != "One on One") && (input != "One On One")) {
-		cout << "Oops! You entered an invalid input. Try again: to simulate a full career, type 'career'. To simulate match play, type 'match play'.\n";
+		cout << "Oops! You entered an invalid input. Try again: to simulate a full career, type 'career'. To simulate match play, type 'match play'. To pit two golfers against each other in a one on one match, type 'one on one'.\n";
 		getline(cin, input);
 	}
 
@@ -267,15 +262,27 @@ int main(int argc, char* argv[]) {
 			matchgolfersrd1[i] = golfers[i];
 		}
 
-
 		srand(time(NULL));
 		bool result;
 		int numtourneys;
 		cout << "How many tournaments would you like to simulate?" << '\n';
 		cin >> numtourneys;
 
+		double ratingavg;
+		Player golfer1;
+		Player golfer2;
+
 		for (int i = 0; i < numtourneys; i++) {
 			for (int i = 0; i < matchgolfernum; i += 2) {
+				
+				golfer1 = matchgolfersrd1[i];
+				golfer2 = matchgolfersrd1[matchgolfernum - (i+1)];
+				ratingavg = (golfer1.rating + golfer2.rating) / 2;
+				golfer1.matchrating = (golfer1.rating + ratingavg) / 2;
+				golfer2.matchrating = (golfer2.rating + ratingavg) / 2;
+				matchgolfersrd1[i] = golfer1;
+				matchgolfersrd1[matchgolfernum - (i+1)] = golfer2;
+
 				result = determine_match_winner(matchgolfersrd1[i], matchgolfersrd1[matchgolfernum - (i+1)]);
 				if (result == true) {
 					if (numtourneys < 2) {
@@ -296,6 +303,15 @@ int main(int argc, char* argv[]) {
 			}
 
 			for (int i = 0; i < matchgolfernum / 2; i += 2) {
+				
+				golfer1 = matchgolfersrd2[i];
+				golfer2 = matchgolfersrd2[(matchgolfernum / 2) - (i+1)];
+				ratingavg = (golfer1.rating + golfer2.rating) / 2;
+				golfer1.matchrating = (golfer1.rating + ratingavg) / 2;
+				golfer2.matchrating = (golfer2.rating + ratingavg) / 2;
+				matchgolfersrd2[i] = golfer1;
+				matchgolfersrd2[(matchgolfernum / 2) - (i+1)] = golfer2;
+
 				result = determine_match_winner(matchgolfersrd2[i], matchgolfersrd2[(matchgolfernum / 2) - (i+1)]);
 				if (result == true) {
 					if (numtourneys < 2) {
@@ -316,6 +332,15 @@ int main(int argc, char* argv[]) {
 			}
 
 			for (int i = 0; i < matchgolfernum / 4; i += 2) {
+				
+				golfer1 = matchgolfersrd3[i];
+				golfer2 = matchgolfersrd3[(matchgolfernum / 4) - (i+1)];
+				ratingavg = (golfer1.rating + golfer2.rating) / 2;
+				golfer1.matchrating = (golfer1.rating + ratingavg) / 2;
+				golfer2.matchrating = (golfer2.rating + ratingavg) / 2;
+				matchgolfersrd3[i] = golfer1;
+				matchgolfersrd3[(matchgolfernum / 4) - (i+1)] = golfer2;
+
 				result = determine_match_winner(matchgolfersrd3[i], matchgolfersrd3[(matchgolfernum / 4) - (i+1)]);
 				if (result == true) {
 					if (numtourneys < 2) {
@@ -336,6 +361,15 @@ int main(int argc, char* argv[]) {
 			}
 
 			for (int i = 0; i < matchgolfernum / 8; i += 2) {
+				
+				golfer1 = matchgolfersrd4[i];
+				golfer2 = matchgolfersrd4[(matchgolfernum / 8) - (i+1)];
+				ratingavg = (golfer1.rating + golfer2.rating) / 2;
+				golfer1.matchrating = (golfer1.rating + ratingavg) / 2;
+				golfer2.matchrating = (golfer2.rating + ratingavg) / 2;
+				matchgolfersrd4[i] = golfer1;
+				matchgolfersrd4[(matchgolfernum / 8) - (i+1)] = golfer2;
+
 				result = determine_match_winner(matchgolfersrd4[i], matchgolfersrd4[(matchgolfernum / 8) - (i+1)]);
 				if (result == true) {
 					if (numtourneys < 2) {
@@ -356,6 +390,15 @@ int main(int argc, char* argv[]) {
 			}
 
 			for (int i = 0; i < matchgolfernum / 16; i += 2) {
+				
+				golfer1 = matchgolfersrd5[i];
+				golfer2 = matchgolfersrd5[(matchgolfernum / 16) - (i+1)];
+				ratingavg = (golfer1.rating + golfer2.rating) / 2;
+				golfer1.matchrating = (golfer1.rating + ratingavg) / 2;
+				golfer2.matchrating = (golfer2.rating + ratingavg) / 2;
+				matchgolfersrd5[i] = golfer1;
+				matchgolfersrd5[(matchgolfernum / 16) - (i+1)] = golfer2;
+
 				result = determine_match_winner(matchgolfersrd5[i], matchgolfersrd5[(matchgolfernum / 16) - (i +1)]);
 				if (result == true) {
 					if (numtourneys < 2) {
@@ -374,6 +417,10 @@ int main(int argc, char* argv[]) {
 			if (numtourneys < 2) {
 				cout << '\n';
 			}
+			
+			ratingavg = (matchgolfersrd6[0].rating + matchgolfersrd6[1].rating) / 2;
+			matchgolfersrd6[0].matchrating = (matchgolfersrd6[0].rating + ratingavg) / 2;
+			matchgolfersrd6[1].matchrating = (matchgolfersrd6[1].rating + ratingavg) / 2;
 
 			result = determine_match_winner(matchgolfersrd6[0], matchgolfersrd6[1]);
 			if (result == true) {
@@ -395,10 +442,11 @@ int main(int argc, char* argv[]) {
 		}
 
 		match_sort(matchgolfersrd1, matchgolfernum);
-		for (int i = 0; i < matchgolfernum; i++) {
-			cout << matchgolfersrd1[i].name << ": " << matchgolfersrd1[i].numtourneyswon << " match play tournaments won" << '\n';
+		if (numtourneys > 1) {
+			for (int i = 0; i < matchgolfernum; i++) {
+				cout << matchgolfersrd1[i].name << ": " << matchgolfersrd1[i].numtourneyswon << " match play tournaments won" << '\n';
+			}
 		}
-		cout << '\n';
 	}
 
 	else if ((input == "one on one") || (input != "1 on 1") || (input != "One on One") || (input != "One On One")) {
@@ -456,6 +504,14 @@ int main(int argc, char* argv[]) {
 			cin >> nummatches;
 		}
 
+		double ratingavg = (player1.rating + player2.rating) / 2;
+		player1.matchrating = (player1.rating + ratingavg) / 2;
+		player2.matchrating = (player2.rating + ratingavg) / 2;
+
+		cout << "Rating average: " << ratingavg << '\n';
+		cout << player1.name << " match rating: " << player1.matchrating << '\n';
+		cout << player2.name << " match rating: " << player2.matchrating << '\n';
+
 		for (int i = 0; i < nummatches; i++) {
 			bool victoryflag = false;
 			int roundsum = 0;
@@ -489,6 +545,10 @@ int main(int argc, char* argv[]) {
 						roundsum++;
 					}
 				}
+			}
+
+			if ((roundsum == 0) && (nummatches == 1)) {
+				cout << player1.name << " and " << player2.name << " tie the match.\n";
 			}
 		}
 
