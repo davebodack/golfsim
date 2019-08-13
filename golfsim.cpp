@@ -1,5 +1,4 @@
 //Author: David Bodack
-//Date: 7/2/19
 
 #include <iostream>
 #include <string>
@@ -26,7 +25,11 @@ public:
 	int usopenswon;
 	int openswon;
 	int numtourneyswon;
+	int nummatchesplayed;
 	int nummatcheswon;
+	int nummatchestied;
+	double rydercuppoints;
+	double totalrydercuppoints;
 
 	Player() {
 		name = "";
@@ -40,7 +43,10 @@ public:
 		usopenswon = 0;
 		openswon = 0;
 		numtourneyswon = 0;
+		nummatchesplayed = 0;
 		nummatcheswon = 0;
+		rydercuppoints = 0;
+		totalrydercuppoints = 0;
 	}
 };
 
@@ -96,11 +102,13 @@ Player determine_winner(Player golfers[], int golfernum, int major) {
 	return golfers[0];
 }
 
+
 bool determine_match_winner(Player golfer1, Player golfer2) {
 	
 	int matchratingsum = (int) (golfer1.matchrating + golfer2.matchrating + 0.5);
 	return (rand() % matchratingsum) < golfer1.matchrating;
 }
+
 
 int determine_hole_winner(Player golfer1, Player golfer2) {
 
@@ -113,8 +121,97 @@ int determine_hole_winner(Player golfer1, Player golfer2) {
 	} else {
 		return 3;
 	}
-	return 0;
 }
+
+
+int determine_foursome_winner(Player golfer1, Player golfer2, Player golfer3, Player golfer4) {
+	
+	int foursomerating = (golfer1.rating + golfer2.rating + golfer3.rating + golfer4.rating) / 4;
+	golfer1.matchrating = (golfer1.rating + foursomerating) / 2;
+	golfer2.matchrating = (golfer2.rating + foursomerating) / 2;
+	golfer3.matchrating = (golfer3.rating + foursomerating) / 2;
+	golfer4.matchrating = (golfer4.rating + foursomerating) / 2;
+
+	int foursomematchratingsum = (int) (golfer1.matchrating + golfer2.matchrating + golfer3.matchrating + golfer4.matchrating + 0.5);
+	int foursomerandnum = (rand() % foursomematchratingsum);
+
+	if (foursomerandnum < (golfer1.matchrating + golfer2.matchrating)) {
+		return 1;
+	} else if (foursomerandnum < (foursomematchratingsum - (golfer3.matchrating + golfer4.matchrating))) {
+		return 2;
+	} else {
+		return 3;
+	}
+}
+
+
+Player* run_match(Player golfer1, Player golfer2, int nummatches, bool printflag) {
+
+	double ratingavg = (golfer1.rating + golfer2.rating) / 2;
+	golfer1.matchrating = (golfer1.rating + ratingavg) / 2;
+	golfer2.matchrating = (golfer2.rating + ratingavg) / 2;
+
+	for (int i = 0; i < nummatches; i++) {
+		bool victoryflag = false;
+		int roundsum = 0;
+		int numholesleft = 18;
+		int holeresult = 0;
+		for (int i = 1; i < 19; i++) {
+			holeresult = determine_hole_winner(golfer1, golfer2);
+			numholesleft--;
+			if ((abs(roundsum) > numholesleft) && (victoryflag == false)) {
+				if (roundsum < 0) {
+					victoryflag = true;
+					golfer1.nummatcheswon++;
+					if ((nummatches == 1) && (printflag == true)) {
+						cout << golfer1.name << " defeats " << golfer2.name << " " << abs(roundsum) << " & " << numholesleft << "!\n";
+					}
+				}
+				else {
+					victoryflag = true;
+					golfer2.nummatcheswon++;
+					if ((nummatches == 1) && (printflag == true)) {
+						cout << golfer2.name << " defeats " << golfer1.name << " " << abs(roundsum) << " & " << numholesleft << "!\n";
+					}	
+				}
+			}
+
+			else {
+				if (holeresult == 1) {
+					roundsum--;
+				}
+				else if (holeresult == 3) {
+					roundsum++;
+				}
+			}
+		}
+
+		if ((roundsum == 0) && (nummatches == 1)) {
+			golfer1.nummatchestied++;
+			golfer2.nummatchestied++;
+			if (printflag == true) {
+				cout << golfer1.name << " and " << golfer2.name << " tie the match.\n";
+			}
+		}
+	}
+
+	Player* matchreturngolfers = new Player[2];
+	matchreturngolfers[0] = golfer1;
+	matchreturngolfers[1] = golfer2;
+	return matchreturngolfers;
+}
+
+
+void shuffle(Player golfers[]) {
+
+	for (int i = 0; i < 12; i++) {
+		int index = rand() % 12;
+		Player tempgolfer = golfers[i];
+		golfers[i] = golfers[index];
+		golfers[index] = tempgolfer;
+	}
+}
+
 
 void swap(Player& x, Player& y) {
 	
@@ -152,6 +249,18 @@ void match_sort(Player golfers[], int golfernum) {
 }
 
 
+void ryder_cup_sort(Player golfers[]) {
+
+	for (int num = 1; num < 12; num++) {
+		for (int i = 0; i < 12 - num; i++) {
+			if (golfers[i].totalrydercuppoints < golfers[i+1].totalrydercuppoints) {
+				swap(golfers[i], golfers[i+1]);
+			}
+		}
+	}
+}
+
+
 int main(int argc, char* argv[]) {
 
 	cout << "Welcome! This is the Historical Golf Legend Simulator.\n";
@@ -171,11 +280,11 @@ int main(int argc, char* argv[]) {
 	}
 
 	string input;
-	cout << "If you'd like to simulate a full career, type 'career'. If you'd like to simulate a match play tournament, type 'match play'. If you'd like to draft a golfer and play a match against someone, type 'one on one'.\n"; 
+	cout << "If you'd like to simulate a full career, type 'career'. If you'd like to simulate a match play tournament, type 'match play'. If you'd like to draft a golfer and play a match against someone, type 'one on one'. If you'd like to simulate an all-time Ryder Cup, type 'Ryder Cup'.\n"; 
 	getline(cin, input);
 
-	while ((input != "Career") && (input != "career") && (input != "match play") && (input != "Match play") && (input != "Match Play") && (input != "one on one") && (input != "1 on 1") && (input != "One on One") && (input != "One On One")) {
-		cout << "Oops! You entered an invalid input. Try again: to simulate a full career, type 'career'. To simulate match play, type 'match play'. To pit two golfers against each other in a one on one match, type 'one on one'.\n";
+	while ((input != "Career") && (input != "career") && (input != "match play") && (input != "Match play") && (input != "Match Play") && (input != "one on one") && (input != "1 on 1") && (input != "One on One") && (input != "One On One") && (input != "Ryder Cup") && (input != "Ryder cup") && (input != "ryder cup") && (input != "rydercup")) {
+		cout << "Oops! You entered an invalid input. Try again: to simulate a full career, type 'career'. To simulate match play, type 'match play'. To pit two golfers against each other in a one on one match, type 'one on one'. If you'd like to simulate an all-time Ryder Cup, type 'Ryder Cup'.\n";
 		getline(cin, input);
 	}
 
@@ -449,7 +558,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	else if ((input == "one on one") || (input != "1 on 1") || (input != "One on One") || (input != "One On One")) {
+	else if ((input == "one on one") || (input == "1 on 1") || (input == "One on One") || (input == "One On One")) {
 		
 		Player player1;
 		Player player2;
@@ -504,59 +613,203 @@ int main(int argc, char* argv[]) {
 			cin >> nummatches;
 		}
 
-		double ratingavg = (player1.rating + player2.rating) / 2;
-		player1.matchrating = (player1.rating + ratingavg) / 2;
-		player2.matchrating = (player2.rating + ratingavg) / 2;
-
-		cout << "Rating average: " << ratingavg << '\n';
-		cout << player1.name << " match rating: " << player1.matchrating << '\n';
-		cout << player2.name << " match rating: " << player2.matchrating << '\n';
-
-		for (int i = 0; i < nummatches; i++) {
-			bool victoryflag = false;
-			int roundsum = 0;
-			int numholesleft = 18;
-			int holeresult = 0;
-			for (int i = 1; i < 19; i++) {
-				if ((abs(roundsum) > numholesleft) && (victoryflag == false)) {
-					if (roundsum < 0) {
-						victoryflag = true;
-						player1.nummatcheswon++;
-						if (nummatches == 1) {
-							cout << player1.name << " defeats " << player2.name << " " << abs(roundsum) << " & " << numholesleft << "!\n";
-						}		
-					}
-					else {
-						victoryflag = true;
-						player2.nummatcheswon++;
-						if (nummatches == 1) {
-							cout << player2.name << " defeats " << player1.name << " " << abs(roundsum) << " & " << numholesleft << "!\n";
-						}	
-					}
-				}
-
-				else {
-					holeresult = determine_hole_winner(player1, player2);
-					numholesleft--;
-					if (holeresult == 1) {
-						roundsum--;
-					}
-					if (holeresult == 3) {
-						roundsum++;
-					}
-				}
-			}
-
-			if ((roundsum == 0) && (nummatches == 1)) {
-				cout << player1.name << " and " << player2.name << " tie the match.\n";
-			}
+		bool oneononeprintflag = false;
+		if (nummatches == 1) {
+			oneononeprintflag = true;
 		}
+
+		Player *matchpointer;
+		matchpointer = run_match(player1, player2, nummatches, oneononeprintflag);
+		player1 = matchpointer[0];
+		player2 = matchpointer[1];
 
 		if (nummatches > 1) {
 			cout << "\nNumber of matches: " << nummatches << "\n";
 			cout << player1.name << ": " << player1.nummatcheswon << " matches won\n";
 			cout << player2.name << ": " << player2.nummatcheswon << " matches won\n";
 			cout << "Number of ties: " << nummatches - player1.nummatcheswon - player2.nummatcheswon << "\n";
+		}
+	}
+
+	else if ((input == "Ryder Cup") || (input == "Ryder cup") || (input == "ryder cup") || (input == "rydercup")) {
+		
+		Player americans[12];
+		Player europeans[12];
+		int americancounter = 0;
+		int europeancounter = 0;
+		double american_points;
+		double european_points;
+		int americanrydercupswon = 0;
+		int europeanrydercupswon = 0;
+
+		for (int i = 0; i < golfernum; i++) {
+			if ((golfers[i].nationality == 'A') && (americancounter < 12)) {
+				americans[americancounter] = golfers[i];
+				americancounter++;
+			} else if ((golfers[i].nationality == 'E') && (europeancounter < 12)) {
+				europeans[europeancounter] = golfers[i];
+				europeancounter++;
+			}
+		}
+
+		srand(time(0));
+		shuffle(americans);
+		shuffle(europeans);
+		
+		int numrydercups;
+		cout << "\nHow many Ryder Cups would you like to simulate? ";
+		cin >> numrydercups;
+
+		while ((!cin) || (numrydercups < 1)) {
+			cout << "Invalid number of Ryder Cups entered. Please enter a valid number of Ryder Cups to be simulated:\n";
+			cin >> numrydercups;
+		}
+
+		bool rydercupprintflag = false;
+		if (numrydercups == 1) {
+			rydercupprintflag = true;
+		}
+
+		for (int n = 0; n < numrydercups; n++) {
+
+			for (int x = 0; x < 12; x++) {
+				americans[x].rydercuppoints = 0;
+				americans[x].nummatcheswon = 0;
+				americans[x].nummatchestied = 0;
+				europeans[x].rydercuppoints = 0;
+				europeans[x].nummatcheswon = 0;
+				europeans[x].nummatchestied = 0;
+			}
+
+			for (int i = 0; i < 4; i++) {
+
+				american_points = 0;
+				european_points = 0;
+
+				for (int j = 0; j < 8; j += 2) {
+					int fourball_result = determine_foursome_winner(americans[j], americans[j+1], europeans[j], europeans[j+1]);
+					americans[j].nummatchesplayed++;
+					americans[j+1].nummatchesplayed++;
+					europeans[j].nummatchesplayed++;
+					europeans[j+1].nummatchesplayed++;
+					if (fourball_result == 1) {
+						americans[j].rydercuppoints++;
+						americans[j+1].rydercuppoints++;
+						if (numrydercups == 1) {
+							cout << americans[j].name << " and " << americans[j+1].name << " defeat " << europeans[j].name << " and " << europeans[j+1].name << ".\n";
+						}
+					} else if (fourball_result == 2) {
+						americans[j].rydercuppoints += 0.5;
+						europeans[j].rydercuppoints += 0.5;
+						if (numrydercups == 1) {
+							cout << americans[j].name << " and " << americans[j+1].name << " tie " << europeans[j].name << " and " << europeans[j+1].name << ".\n";
+						}
+					} else {
+						europeans[j].rydercuppoints++;
+						europeans[j+1].rydercuppoints++;
+						if (numrydercups == 1) {
+							cout << europeans[j].name << " and " << europeans[j+1].name << " defeat " << americans[j].name << " and " << americans[j+1].name << ".\n";
+						}
+					}
+				}
+
+				for (int i = 0; i < 12; i++) {
+					american_points += americans[i].rydercuppoints;
+					european_points += europeans[i].rydercuppoints;
+				}
+
+				cout << '\n';
+
+				if ((i == 1) || (i == 3)) {
+					american_points /= 2;
+					european_points /= 2;
+
+					if (numrydercups == 1) {
+						if (american_points > european_points) {
+							cout << "After Day " << ((i / 2) + 1) << ", the Americans lead the Europeans, " << american_points << "-" << european_points << "!\n\n";
+						} else if (american_points == european_points) {
+							cout << "After Day " << ((i / 2) + 1) << ", the Americans and the Europeans are tied at " << american_points << "!\n\n"; 
+						} else {
+							cout << "After Day " << ((i / 2) + 1) << ", the Europeans lead the Americans, " << european_points << "-" << american_points << "!\n\n";
+						}
+					}
+				}
+
+				shuffle(americans);
+				shuffle(europeans);
+			}
+
+			shuffle(americans);
+			shuffle(europeans);
+
+			for (int i = 0; i < 12; i++) {
+				americans[i].nummatcheswon = 0;
+				europeans[i].nummatcheswon = 0;
+				americans[i].nummatchestied = 0;
+				europeans[i].nummatchestied = 0;
+
+				Player *rydercuppointer;
+				rydercuppointer = run_match(americans[i], europeans[i],1, rydercupprintflag);
+				
+				americans[i] = rydercuppointer[0];
+				europeans[i] = rydercuppointer[1];
+				americans[i].nummatchesplayed++;
+				europeans[i].nummatchesplayed++;
+
+				if (americans[i].nummatchestied == 1) {
+					americans[i].rydercuppoints += 0.5;
+					american_points += 0.5;
+					europeans[i].rydercuppoints += 0.5;
+					european_points += 0.5;
+				} else {
+					americans[i].rydercuppoints += americans[i].nummatcheswon;
+					american_points += americans[i].nummatcheswon;
+					europeans[i].rydercuppoints += europeans[i].nummatcheswon;
+					european_points += europeans[i].nummatcheswon;
+				}
+
+				americans[i].totalrydercuppoints += americans[i].rydercuppoints;
+				europeans[i].totalrydercuppoints += europeans[i].rydercuppoints;
+			}
+
+			ryder_cup_sort(americans);
+			ryder_cup_sort(europeans);
+
+			if (numrydercups == 1) {
+				cout << "\nFinal points tally:\n";
+				for (int i = 0; i < 12; i++) {
+					cout << americans[i].name << ": " << americans[i].nummatchesplayed << " matches, " << americans[i].rydercuppoints  << " points";
+					for (int j = 0; j < 15 - americans[i].name.size(); j++) {
+						cout << " ";
+					}
+					cout << "| " << europeans[i].name << ": " << europeans[i].nummatchesplayed << " matches, " << europeans[i].rydercuppoints << " points\n";
+				}
+			}
+
+
+			if (american_points > european_points) {
+				americanrydercupswon++;
+				cout << "\nThe Americans emerge victorious at the Ryder Cup, defeating the Europeans " << american_points << " to " << european_points << "!\n\n";
+			} else if (american_points == european_points) {
+				cout << "\nThe Americans and the Europeans end up deadlocked in a tie, 14 to 14!\n\n";
+			} else {
+				europeanrydercupswon++;
+				cout << "\nThe Europeans emerge victorious at the Ryder Cup, defeating the Americans " << european_points << " to " << american_points << "!\n\n";
+			}
+		}
+
+		if (numrydercups > 1) {
+			cout << "\nFinal points tally:\n";
+			for (int i = 0; i < 12; i++) {
+				cout << americans[i].name << ": " << americans[i].nummatchesplayed << " matches, " << americans[i].totalrydercuppoints  << " points";
+				for (int j = 0; j < 17 - americans[i].name.size(); j++) {
+					cout << " ";
+				}
+				cout << "| " << europeans[i].name << ": " << europeans[i].nummatchesplayed << " matches, " << europeans[i].totalrydercuppoints << " points\n";
+			}
+			if (numrydercups > 1) {
+				cout << "\nThe Americans win " << americanrydercupswon << " Ryder Cups and the Europeans win " << europeanrydercupswon << " Ryder Cups, with " << (numrydercups - americanrydercupswon - europeanrydercupswon) << " Ryder Cups tied between them.\n\n";
+			}
 		}
 	}
 
