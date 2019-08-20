@@ -12,6 +12,7 @@
 
 using namespace std;
 
+//Standard class for golfers in any simulation mode
 class Player {
 public:
 	std::string name;
@@ -31,6 +32,7 @@ public:
 	double rydercuppoints;
 	double totalrydercuppoints;
 
+	//Standard default constructor
 	Player() {
 		name = "";
 		rating = 0;
@@ -51,6 +53,7 @@ public:
 };
 
 
+//Adds together the ratings of golfers in an array and returns the sum
 double sum(Player golfers[], int golfernum) {
 	
 	double sum = 0;
@@ -62,6 +65,7 @@ double sum(Player golfers[], int golfernum) {
 }
 
 
+//Determines the winner of a stroke play tournament from an array of golfers and modifies the relevant attributes of that golfer
 Player determine_winner(Player golfers[], int golfernum, int major) {
 	
 	double ratingsum = sum(golfers, golfernum);
@@ -103,6 +107,7 @@ Player determine_winner(Player golfers[], int golfernum, int major) {
 }
 
 
+//Simplistic method of determining the winner of a match between two golfers. Returns true if golfer1 wins, false if golfer2 wins
 bool determine_match_winner(Player golfer1, Player golfer2) {
 	
 	int matchratingsum = (int) (golfer1.matchrating + golfer2.matchrating + 0.5);
@@ -110,6 +115,7 @@ bool determine_match_winner(Player golfer1, Player golfer2) {
 }
 
 
+//Determines the winner of one hole in a match between two golfers. Returns 1 if golfer1 wins, 2 if they tie, and 3 if golfer2 wins
 int determine_hole_winner(Player golfer1, Player golfer2) {
 
 	int ratingtotal = (int) ((golfer1.matchrating * 2) + (golfer2.matchrating * 2) + 0.5);
@@ -124,6 +130,7 @@ int determine_hole_winner(Player golfer1, Player golfer2) {
 }
 
 
+//Determines the winner of a foursome match. Returns 1 if golfers 1 and 2 win, 2 if the four of them tie, and 3 if golfers 3 and 4 win
 int determine_foursome_winner(Player golfer1, Player golfer2, Player golfer3, Player golfer4) {
 	
 	int foursomerating = (golfer1.rating + golfer2.rating + golfer3.rating + golfer4.rating) / 4;
@@ -145,6 +152,9 @@ int determine_foursome_winner(Player golfer1, Player golfer2, Player golfer3, Pl
 }
 
 
+//Runs a number of match play matches specified by nummatches. 
+//Calls determine_hole_winner appropriate number of times in order to determine match results.
+//Returns pointer to an array containing the golfers in the match with the appropriate attributes updated.
 Player* run_match(Player golfer1, Player golfer2, int nummatches, bool printflag) {
 
 	double ratingavg = (golfer1.rating + golfer2.rating) / 2;
@@ -199,6 +209,7 @@ Player* run_match(Player golfer1, Player golfer2, int nummatches, bool printflag
 }
 
 
+//Randomly shuffles an array of golfers
 void shuffle(Player golfers[]) {
 
 	for (int i = 0; i < 12; i++) {
@@ -210,6 +221,7 @@ void shuffle(Player golfers[]) {
 }
 
 
+//Swaps the addresses of two golfers
 void swap(Player& x, Player& y) {
 	
 	Player temp;
@@ -219,6 +231,7 @@ void swap(Player& x, Player& y) {
 }
 
 
+//Sorts an array of golfers based on the number of majors the golfers have won
 void sort(Player golfers[], int golfernum) {
 	
 	for (int num = 1; num < golfernum; num++) {
@@ -234,6 +247,7 @@ void sort(Player golfers[], int golfernum) {
 }
 
 
+//Sorts an array of golfers based on the number of tournaments in Career Mode that the golfers have won
 void match_sort(Player golfers[], int golfernum) {
 	
 	for (int num = 1; num < golfernum; num++) {
@@ -246,6 +260,7 @@ void match_sort(Player golfers[], int golfernum) {
 }
 
 
+//Sorts an array of golfers based on the number of Ryder Cup points that the golfers have accrued
 void ryder_cup_sort(Player golfers[]) {
 
 	for (int num = 1; num < 12; num++) {
@@ -258,6 +273,8 @@ void ryder_cup_sort(Player golfers[]) {
 }
 
 
+//The main function prompts the user to choose the mode of simulation they would like to execute,
+//and executes each form of simulation based on what the user selects
 int main(int argc, char* argv[]) {
 
 	cout << "Welcome! This is the Historical Golf Legend Simulator.\n";
@@ -305,6 +322,7 @@ int main(int argc, char* argv[]) {
 		infile >> golfers[i].nationality;
 	}
 
+	//This section executes if the user selects to simulate a full career
 	if ((input == "Career") || (input == "career")) {
 		
 		//Randomly shuffles players in the golfers array
@@ -353,6 +371,7 @@ int main(int argc, char* argv[]) {
 		infile.close();
 	}
 
+	//This section executed if the user selects to simulate a match play tournament
 	else if ((input == "Match Play") || (input == "Match play") || (input == "match play")) {
 
 		//Fix once golfernum isn't hard-coded in
@@ -555,6 +574,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
+	//This section executes if the user selects to pit two specific golfers against each other
 	else if ((input == "one on one") || (input == "1 on 1") || (input == "One on One") || (input == "One On One")) {
 		
 		Player player1;
@@ -628,6 +648,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
+	//This section executes if the user selects to simulate either a Ryder Cup or President's Cup
 	else if ((input == "International") || (input == "international") || (input == "intl")) {
 		
 		Player americans[12];
