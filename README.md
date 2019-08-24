@@ -7,11 +7,10 @@ The first option for simulation, stroke play, simulates what would happen if the
 
 The command to run the program in your terminal is "./golfsim [filename]". The program will prompt you on how to proceed from there.
 
-There are plenty of opportunities for improvement with this code, some of which are quick fixes and others of which may be long-term goals. My ultimate goal is to employ HTML, CSS, and JavaScript, which I am very unfamiliar with right now, to have this running as a website through GitHub Pages. I also have many ideas for additional modes and features that I hope to implement soon. These include:
+There are plenty of opportunities for improvement with this code, some of which are quick fixes and others of which may be long-term goals. My ultimate goal is to employ HTML, CSS, and JavaScript, which I am very unfamiliar with right now, to have this running as a website through GitHub Pages. Another very important goal of mine is to use web scraping to ensure that the program will always have the most up-to-date ratings from thealltimegreatestgolfers.com or wherever the rankings are being fetched from. I also have many other ideas for additional modes and features that I hope to implement soon. These include:
 
--Hole-by-hole details of the final match in a match play tournament that would add atmosphere to the match, such as "Jordan Spieth makes a 35-foot putt to win the hole!" or "Jordan Spieth loses his nerve and chunks it into the pond, costing him the hole!"
 -Selecting a historical player and simulating their career if they played today. Would need a new text file for this.
--Show the leaderboard for a major, with players' scores and any particularly interesting occurrences during the major.
+-Show the leaderboard for a major, with players' scores and any particularly interesting occurrences during the major. This would require switching to a true stroke play method of simulation, something that I'm currently working on.
 -Generate FedEx Cup and OWGR points based on how a player finishes in each tournament, show who wins the FedEx Cup or gets the most OWGR points yearly. New FedEx Cup mode would be part of it.
 
 Feel free to tweak any aspect of this you'd like to see changed and create a pull request. I hope you find this at least somewhat interesting, even though I know it's not a definitive indication of what would happen in these scenarios in the slightest. Regardless, it's been a blast for me to make and I look forward to seeing what it can become and what it can help me learn!
