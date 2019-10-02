@@ -1,42 +1,163 @@
-//Determines the winner of a stroke play tournament from an array of golfers and modifies the relevant attributes of that golfer
-Player determine_winner(Player golfers[], int golfernum, int major) {
-	
-	double ratingsum = sum(golfers, golfernum);
-	ratingsum += 0.5;
-	int intsum = (int) ratingsum;
-	int randomnum = (rand() % intsum) + 1;
-		
-	for (int i = 0; i < golfernum; i++) {
-		randomnum -= golfers[i].rating;
-		if (randomnum <= 0) {
-			golfers[i].majorswon++;
-			
-			if (major == 0) {
-				golfers[i].pgatourwins++;
-				golfers[i].majorswon--;
-			}
-			else if (major == 1) {
-				golfers[i].masterswon++;
-				golfers[i].pgatourwins++;
-			}
-			else if (major == 2) {
-				golfers[i].pgaswon++;
-				golfers[i].pgatourwins++;
-			}
-			else if (major == 3) {
-				golfers[i].usopenswon++;
-				golfers[i].pgatourwins++;
-			}
-			else if (major == 4) {
-				golfers[i].openswon++;
-				golfers[i].pgatourwins++;
-			}
+void print_tourney_details(Player winner, int year, int tourneynum) {
 
-			return golfers[i];
+	if (tourneynum == 0) {
+		cout << winner.name << " has won the " << year - 1 << " Military Tribute at the Greenbrier.\n";
+	} else if (tourneynum == 1) {
+		cout << winner.name << " has won the " << year - 1 << " Sanderson Farms Championship.\n";
+	} else if (tourneynum == 2) {
+		cout << winner.name << " has won the " << year - 1 << " Safeway Open.\n";
+	} else if (tourneynum == 3) {
+		cout << winner.name << " has won the " << year - 1 << " Shriners Hospitals for Children Open.\n";
+	} else if (tourneynum == 4) {
+		cout << winner.name << " has won the " << year - 1 << " Houston Open.\n";
+	} else if (tourneynum == 5) {
+		cout << winner.name << " has won the " << year - 1 << " CJ Cup.\n";
+	} else if (tourneynum == 6) {
+		cout << winner.name << " has won the " << year - 1 << " Zozo Championship.\n";
+	} else if (tourneynum == 7) {
+		cout << winner.name << " has won the " << year - 1 << " WGC-HSBC Champions.\n";
+	} else if (tourneynum == 8) {
+		cout << winner.name << " has won the " << year - 1 << " Mayakoba Golf Classic.\n";
+	} else if (tourneynum == 9) {
+		cout << winner.name << " has won the " << year - 1 << " RSM Classic.\n";
+	} else if (tourneynum == 10) {
+		cout << winner.name << " has won the " << year << " Sentry Tournament of Champions.\n";
+	} else if (tourneynum == 11) {
+		cout << winner.name << " has won the " << year << " Sony Open in Hawaii.\n";
+	} else if (tourneynum == 12) {
+		cout << winner.name << " has won the " << year << " American Express.\n";
+	} else if (tourneynum == 13) {
+		cout << winner.name << " has won the " << year << " Farmers Insurance Open.\n";
+	} else if (tourneynum == 14) {
+		cout << winner.name << " has won the " << year << " Waste Management Phoenix Open.\n";
+	} else if (tourneynum == 15) {
+		cout << winner.name << " has won the " << year << " AT&T Pebble Beach Pro-Am.\n";
+	} else if (tourneynum == 16) {
+		cout << winner.name << " has won the " << year << " Genesis Invitational.\n";
+	} else if (tourneynum == 17) {
+		cout << winner.name << " has won the " << year << " WGC-Mexico Championship.\n";
+	} else if (tourneynum == 18) {
+		cout << winner.name << " has won the " << year << " Honda Classic.\n";
+	} else if (tourneynum == 19) {
+		cout << winner.name << " has won the " << year << " Arnold Palmer Invitational.\n";
+	} else if (tourneynum == 20) {
+		cout << winner.name << " has won the " << year << " Players Championship!\n";
+	} else if (tourneynum == 21) {
+		cout << winner.name << " has won the " << year << " Valspar Championship.\n";
+	} else if (tourneynum == 22) {
+		cout << winner.name << " has won the " << year << " WGC-Dell Technologies Match Play.\n";
+	} else if (tourneynum == 23) {
+		cout << winner.name << " has won the " << year << " Valero Texas Open.\n";
+	} else if (tourneynum == 24) {
+		cout << winner.name << " claims the green jacket at the " << year << " Masters!\n";
+	} else if (tourneynum == 25) {
+		cout << winner.name << " has won the " << year << " RBC Heritage.\n";
+	} else if (tourneynum == 26) {
+		cout << winner.name << " has won the " << year << " Wells Fargo Championship.\n";
+	} else if (tourneynum == 27) {
+		cout << winner.name << " has won the " << year << " AT&T Byron Nelson.\n";
+	} else if (tourneynum == 28) {
+		cout << winner.name << " is victorious at the " << year << " PGA Championship!\n";
+	} else if (tourneynum == 29) {
+		cout << winner.name << " has won the " << year << " Charles Schwab Challenge.\n";
+	} else if (tourneynum == 30) {
+		cout << winner.name << " has won the " << year << " Rocket Mortage Classic.\n";
+	} else if (tourneynum == 31) {
+		cout << winner.name << " has won the " << year << " Memorial Tournament.\n";
+	} else if (tourneynum == 32) {
+		cout << winner.name << " has won the " << year << " RBC Canadian Open.\n";
+	} else if (tourneynum == 33) {
+		cout << winner.name << " triumphs over golf's ultimate test at the " << year << " U.S. Open!\n";
+	} else if (tourneynum == 34) {
+		cout << winner.name << " has won the " << year << " Travelers Championship.\n";
+	} else if (tourneynum == 35) {
+		cout << winner.name << " has won the " << year << " WGC-FedEx St. Jude Invitational.\n";
+	} else if (tourneynum == 36) {
+		cout << winner.name << " has won the " << year << " John Deere Classic.\n";
+	} else if (tourneynum == 37) {
+		cout << winner.name << " is the Champion Golfer of the Year at the " << year << " Open Championship!\n";
+	} else if (tourneynum == 38) {
+		cout << winner.name << " has won the " << year << " 3M Open.\n";	
+	} else if (tourneynum == 39) {
+		cout << winner.name << " has won the " << year << " Wyndham Championship.\n";
+	} else if (tourneynum == 40) {
+		cout << winner.name << " has won the " << year << " Northern Trust!\n";
+	} else if (tourneynum == 41) {
+		cout << winner.name << " has won the " << year << " BMW Championship!\n";
+	} else if (tourneynum == 42) {
+		cout << winner.name << " has won the " << year << " Tour Championship!\n";
+	}
+}
+
+
+//Determines the winner of a stroke play tournament from an array of golfers and modifies the relevant attributes of that golfer
+void determine_winner(Player golfers[], int golfernum, int tourneynum, double regulartourneyscores[], double wgcfedexscores[], double majorfedexscores[], double playoffscores[], bool tourneyprintflag, int year) {
+	
+	double fedexratingsum;
+	bool placedflag = false;
+	Player tourneypodium[3];
+	
+	for (int i = 0; i < golfernum; i++) {
+
+		fedexratingsum = career_sum(golfers, golfernum);
+		fedexratingsum += 0.5;
+		int intsum = (int) fedexratingsum;
+		int randomnum = (rand() % intsum) + 1;
+
+		placedflag = false;
+
+		for (int j = 0; j < golfernum; j++) {
+
+			if ((placedflag == false) && (golfers[j].placedflag == false)) {
+
+				randomnum -= golfers[j].rating;
+				if (randomnum <= 0) {
+					golfers[j].placedflag = true;
+					placedflag = true;
+					if (i == 0) {
+						tourneypodium[0] = golfers[j];
+						golfers[j].pgatourwins++;
+						if ((tourneynum == 20) || (tourneynum == 24) || (tourneynum == 28) || (tourneynum == 33) || (tourneynum == 37)) {
+							if (tourneynum != 20) {
+								golfers[j].majorswon++;
+								if (tourneynum == 24) {
+									golfers[j].masterswon++;
+								} else if (tourneynum == 28) {
+									golfers[j].pgaswon++;
+								} else if (tourneynum == 33) {
+									golfers[j].usopenswon++;
+								} else if (tourneynum == 37) {
+									golfers[j].openswon++;
+								}
+							}
+						}
+					} else if (i == 1) {
+						tourneypodium[1] = golfers[j];
+					} else if (i == 2) {
+						tourneypodium[2] = golfers[j];
+					}
+
+					if ((tourneynum == 20) || (tourneynum == 24) || (tourneynum == 28) || (tourneynum == 33) || (tourneynum == 37)) {
+						golfers[j].fedexpoints += majorfedexscores[i];
+					} else if ((tourneynum == 7) || (tourneynum == 17) || (tourneynum == 22) || (tourneynum == 35)) {
+						golfers[j].fedexpoints += wgcfedexscores[j];
+					} else if ((tourneynum > 38) && (tourneynum < 42)) {
+						golfers[j].fedexpoints += playoffscores[i];
+					} else {
+						golfers[j].fedexpoints += regulartourneyscores[i];
+					}
+				}
+			}
 		}
+
+		shuffle(golfers, golfernum);
 	}
 
-	return golfers[0];
+	if (tourneyprintflag == true) {
+		print_tourney_details(tourneypodium[0], year + 2020, tourneynum);
+		cout << tourneypodium[1].name << " comes in second place, and " << tourneypodium[2].name << " comes in third.\n\n";
+	}
+	
 }
 
 
@@ -199,7 +320,6 @@ Player* run_match(Player golfer1, Player golfer2, int nummatches, bool detailsfl
 			golfer1.nummatchestied++;
 			golfer2.nummatchestied++;
 			cout << golfer1.name << " and " << golfer2.name << " tie the match.\n";
-			
 		}
 	}
 
@@ -208,3 +328,5 @@ Player* run_match(Player golfer1, Player golfer2, int nummatches, bool detailsfl
 	matchreturngolfers[1] = golfer2;
 	return matchreturngolfers;
 }
+
+

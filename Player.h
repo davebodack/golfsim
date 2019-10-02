@@ -18,11 +18,14 @@ public:
 	int nummatchesplayed;
 	int nummatcheswon;
 	int nummatchestied;
+	int numfedexcupswon;
 	double rydercuppoints;
 	double totalrydercuppoints;
 	double draftpoints;
 	double totaldraftpoints;
+	double fedexpoints;
 	bool draftedflag;
+	bool placedflag;
 
 	//Standard default constructor
 	Player() {
@@ -39,9 +42,13 @@ public:
 		numtourneyswon = 0;
 		nummatchesplayed = 0;
 		nummatcheswon = 0;
+		nummatchestied = 0;
+		numfedexcupswon = 0;
 		rydercuppoints = 0;
 		totalrydercuppoints = 0;
+		fedexpoints = 0;
 		draftedflag = false;
+		placedflag = false;
 	}
 };
 

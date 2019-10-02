@@ -10,6 +10,20 @@ double sum(Player golfers[], int golfernum) {
 }
 
 
+//Modification of above sum function for eliminating players that have already been placed in a tournament
+double career_sum(Player golfers[], int golfernum) {
+	
+	double sum = 0;
+
+	for (int i = 0; i < golfernum; i++) {
+		if (golfers[i].placedflag == false) {
+			sum += golfers[i].rating;
+		}
+	}
+	return sum;
+}
+
+
 //Randomly shuffles an array of golfers
 void shuffle(Player golfers[], int golferssize) {
 
@@ -78,6 +92,19 @@ void draft_sort(Player golfers[]) {
 	for (int num = 1; num < 12; num++) {
 		for (int i = 0; i < 12 - num; i++) {
 			if (golfers[i].totaldraftpoints < golfers[i+1].totaldraftpoints) {
+				swap(golfers[i], golfers[i+1]);
+			}
+		}
+	}
+}
+
+
+//Sorts an array of golfers based on the number of FedEx Cup points the golfers have accrued
+void fedex_sort(Player golfers[], int golfernum) {
+
+	for (int num = 1; num < golfernum; num++) {
+		for (int i = 0; i < golfernum - num; i++) {
+			if (golfers[i].fedexpoints < golfers[i+1].fedexpoints) {
 				swap(golfers[i], golfers[i+1]);
 			}
 		}
