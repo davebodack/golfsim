@@ -110,3 +110,16 @@ void fedex_sort(Player golfers[], int golfernum) {
 		}
 	}
 }
+
+
+//Sorts an array of golfers based on their scores
+void score_sort(Player golfers[], int golfernum) {
+
+	for (int num = 1; num < golfernum; num++) {
+		for (int i = 0; i < golfernum - num; i++) {
+			if (golfers[i].score > golfers[i+1].score) {
+				swap(golfers[i], golfers[i+1]);
+			}
+		}
+	}
+}

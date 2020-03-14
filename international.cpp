@@ -15,8 +15,10 @@ void international(Player golfers[], int golfernum) {
 	cout << "\nIf you'd like to simulate a Ryder Cup, type 'Ryder Cup'. If you'd like to simulate a President's Cup, type 'President's Cup'.\n";
 	cin >> internationalinput;
 
-	while ((internationalinput != "Ryder Cup") && (internationalinput != "President's Cup") && (internationalinput != "Ryder cup") && (internationalinput != "Presidents Cup") && (internationalinput != "President's cup") && (internationalinput != "Presidents cup") && (internationalinput != "ryder cup") && (internationalinput != "president's cup") && (internationalinput != "presidents cup") && (internationalinput != "Ryder") && (internationalinput != "ryder") && (internationalinput != "Presidents") && (internationalinput != "presidents")) {
+	while ((!cin) && (internationalinput != "Ryder Cup") && (internationalinput != "President's Cup") && (internationalinput != "Ryder cup") && (internationalinput != "Presidents Cup") && (internationalinput != "President's cup") && (internationalinput != "Presidents cup") && (internationalinput != "ryder cup") && (internationalinput != "president's cup") && (internationalinput != "presidents cup") && (internationalinput != "Ryder") && (internationalinput != "ryder") && (internationalinput != "Presidents") && (internationalinput != "presidents")) {
 		cout << "Invalid input entered, please select either the Ryder Cup by typing 'Ryder Cup' or the President's Cup by typing 'President's Cup'.\n";
+		cin.clear();
+		cin.ignore(numeric_limits<streamsize>::max(),'\n');
 		cin >> internationalinput;
 	}
 
@@ -47,17 +49,22 @@ void international(Player golfers[], int golfernum) {
 		cout << "\nHow many President's Cups would you like to simulate?\n";
 	}
 
+	cin.clear();
+	cin.ignore(numeric_limits<streamsize>::max(),'\n');
 	cin >> numrydercups;
 
-	while ((!cin) && (numrydercups < 1)) {
+	while ((!cin) || (numrydercups < 1)) {
 		if (internationaltype == 'E') {
 			cout << "Invalid number of Ryder Cups entered. Please enter a valid number of Ryder Cups to be simulated:\n";
 		} else {
 			cout << "Invalid number of President's Cups entered. Please enter a valid number of President's Cups to be simulated:\n";
 		}
-		cin.ignore();
+		cin.clear();
+		cin.ignore(numeric_limits<streamsize>::max(),'\n');
 		cin >> numrydercups;
 	}
+
+	cout << "\n";
 
 	for (int n = 0; n < numrydercups; n++) {
 
@@ -193,7 +200,7 @@ void international(Player golfers[], int golfernum) {
 			if (internationaltype == 'E') {
 				cout << "\nThe Americans emerge victorious at the Ryder Cup, defeating the Europeans " << american_points << " to " << international_points << "!\n";
 			} else {
-				cout << "\nThe Americans emerge victorious at the Ryder Cup, defeating the Internationals " << american_points << " to " << international_points << "!\n";
+				cout << "\nThe Americans emerge victorious at the President's Cup, defeating the Internationals " << american_points << " to " << international_points << "!\n";
 			}
 		} else if (american_points == international_points) {
 			if (internationaltype == 'E') {
@@ -206,7 +213,7 @@ void international(Player golfers[], int golfernum) {
 			if (internationaltype == 'E') {
 				cout << "\nThe Europeans emerge victorious at the Ryder Cup, defeating the Americans " << international_points << " to " << american_points << "!\n";
 			} else {
-				cout << "\nThe Internationals emerge victorious at the Ryder Cup, defeating the Americans " << international_points << " to " << american_points << "!\n";
+				cout << "\nThe Internationals emerge victorious at the President's Cup, defeating the Americans " << international_points << " to " << american_points << "!\n";
 			}
 		}
 	}
@@ -215,8 +222,11 @@ void international(Player golfers[], int golfernum) {
 		cout << "\nFinal points tally:\n";
 		for (int i = 0; i < 12; i++) {
 			cout << americans[i].name << ": " << americans[i].nummatchesplayed << " matches, " << americans[i].totalrydercuppoints  << " points";
-			for (int j = 0; j < 17 - americans[i].name.size(); j++) {
+			for (int j = 0; j < 15 - americans[i].name.size(); j++) {
 				cout << " ";
+			}
+			if (americans[i].totalrydercuppoints == trunc(americans[i].totalrydercuppoints)) {
+				cout << "  ";
 			}
 			cout << "| " << internationals[i].name << ": " << internationals[i].nummatchesplayed << " matches, " << internationals[i].totalrydercuppoints << " points\n";
 		}
@@ -224,7 +234,7 @@ void international(Player golfers[], int golfernum) {
 			if (internationaltype == 'E') {
 				cout << "\nThe Americans win " << americanrydercupswon << " Ryder Cups and the Europeans win " << internationalrydercupswon << " Ryder Cups, with " << (numrydercups - americanrydercupswon - internationalrydercupswon) << " Ryder Cups tied between them.\n\n";
 			} else {
-				cout << "\nThe Americans win " << americanrydercupswon << " Ryder Cups and the Internationals win " << internationalrydercupswon << " Ryder Cups, with " << (numrydercups - americanrydercupswon - internationalrydercupswon) << " Ryder Cups tied between them.\n\n";
+				cout << "\nThe Americans win " << americanrydercupswon << " President's Cups and the Internationals win " << internationalrydercupswon << " President's Cups, with " << (numrydercups - americanrydercupswon - internationalrydercupswon) << " President's Cups tied between them.\n\n";
 			}
 		}
 	}

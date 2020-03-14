@@ -21,7 +21,25 @@ void matchplay(Player golfers[]) {
 
 	while ((!cin) || (numtourneys < 1)) {
 		cout << "Invalid number of tournaments entered. Please enter a number of tournaments greater than zero that you'd like to simulate:\n";
+		cin.clear();
+		cin.ignore(numeric_limits<streamsize>::max(),'\n');
 		cin >> numtourneys;
+	}
+
+	string finaleprint;
+	cout << "Would you like to print out hole-by-hole details of the final round of each tournament you play?\n";
+	cin >> finaleprint;
+
+	while ((!cin) || (finaleprint != "Yes") && (finaleprint != "No") && (finaleprint != "YES") && (finaleprint != "NO") && (finaleprint != "yes") && (finaleprint != "no") && (finaleprint != "Y") && (finaleprint != "N") && (finaleprint != "y") && (finaleprint != "n")) {
+		cout << "Invalid input entered. Please type whether or not you'd like to print hole-by-hole details of the last round of every tournament you simulate:\n";
+		cin.clear();
+		cin.ignore(numeric_limits<streamsize>::max(),'\n');
+		cin >> finaleprint;
+	}
+
+	bool finaleprintflag = false;
+	if ((finaleprint == "YES") || (finaleprint == "Yes") || (finaleprint == "yes") || (finaleprint == "Y") || (finaleprint == "y")) {
+		finaleprintflag = true;
 	}
 
 	double ratingavg;
@@ -183,7 +201,7 @@ void matchplay(Player golfers[]) {
 		matchgolfersrd6[1].matchrating = (matchgolfersrd6[1].rating + ratingavg) / 2;
 		detailsflag = true;
 
-		Player *tourneyfinale = run_match(matchgolfersrd6[0], matchgolfersrd6[1], 1, true);
+		Player *tourneyfinale = run_match(matchgolfersrd6[0], matchgolfersrd6[1], 1, finaleprintflag);
 		matchgolfersrd6[0] = tourneyfinale[0];
 		matchgolfersrd6[1] = tourneyfinale[1];
 		if (matchgolfersrd6[0].nummatcheswon > matchgolfersrd6[1].nummatcheswon) {

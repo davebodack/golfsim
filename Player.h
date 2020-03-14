@@ -8,6 +8,8 @@ public:
 	double rating;
 	double matchrating;
 	char nationality;
+	int score;
+	int originalscore;
 	int pgatourwins;
 	int majorswon;
 	int masterswon;
@@ -33,6 +35,8 @@ public:
 		rating = 0;
 		matchrating = 0;
 		nationality = '\0';
+		score = 0;
+		originalscore = 0;
 		pgatourwins = 0;
 		majorswon = 0;
 		masterswon = 0;

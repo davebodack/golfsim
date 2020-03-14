@@ -90,6 +90,7 @@ void print_tourney_details(Player winner, int year, int tourneynum) {
 }
 
 
+//OBSOLETE: REPLACED BY DETERMINE_SCORES (SEE BELOW)
 //Determines the winner of a stroke play tournament from an array of golfers and modifies the relevant attributes of that golfer
 void determine_winner(Player golfers[], int golfernum, int tourneynum, double regulartourneyscores[], double wgcfedexscores[], double majorfedexscores[], double playoffscores[], bool tourneyprintflag, int year) {
 	
@@ -147,7 +148,7 @@ void determine_winner(Player golfers[], int golfernum, int tourneynum, double re
 						golfers[j].fedexpoints += regulartourneyscores[i];
 					}
 				}
-			}
+			} 
 		}
 
 		shuffle(golfers, golfernum);
@@ -330,3 +331,130 @@ Player* run_match(Player golfer1, Player golfer2, int nummatches, bool detailsfl
 }
 
 
+//Function to generate 18-hole scores for each golfer
+void determine_scores(Player golfers[], int golfernum, int tourneynum, int tourneypar, double tourneyscores[], bool tourneyprintflag, int year) {
+
+	default_random_engine generator;
+	normal_distribution<double> distribution(tourneypar - 1, 2.0);
+
+	int scores[golfernum];
+	Player tourneypodium[3];
+
+	for (int i = 0; i < golfernum; i++) {
+		double scoredub = distribution(generator);
+		scoredub += 0.5;
+		int score = (int)scoredub;
+		scores[i] = score;
+	}
+
+	sort(scores, scores + golfernum);
+
+	bool placedflag = false;
+	srand(time(NULL));
+
+	//Checks if we're simulating 2020 Players, which would mean we only need to sim 3 rounds instead of 4
+	int numrounds;
+	if (tourneyscores == 0) {
+		numrounds = 3;
+	} else {
+		numrounds = 4;
+	}
+
+	for (int h = 0; h < numrounds; h++) {
+
+		for (int i = 0; i < golfernum; i++) {
+
+			double career_sum_scores = career_sum(golfers, golfernum);
+			career_sum_scores += 0.5;
+			int int_sum_scores = (int) career_sum_scores;
+			int randomnum = (rand() % int_sum_scores) + 1;
+
+			placedflag = false;
+			for (int j = 0; j < golfernum; j++) {
+
+				if ((placedflag == false) && (golfers[j].placedflag == false)) {
+
+					randomnum -= golfers[j].rating;
+					if (randomnum <= 0) {
+						golfers[j].placedflag = true;
+						placedflag = true;
+						golfers[j].score += scores[i];
+
+						//This checks if we're only simulating the 2020 Players, which FedEx points wouldn't matter for
+						if (tourneyscores != 0) {
+							golfers[j].fedexpoints += tourneyscores[i];
+						}
+					}
+				}
+			}
+
+			shuffle(golfers, golfernum);
+		}
+
+		score_sort(golfers, golfernum);
+
+		//Only meant to print the leaderboards of Days 2-4 for simulating 2020 Players
+		if (tourneyprintflag == true) {
+			if (tourneyscores == 0) {
+				cout << "\nDay " << h+2 << " Leaderboard:\n";
+				for (int n = 0; n < 10; n++) {
+					if (golfers[n].score < (tourneypar*(h+2))) {
+						cout << golfers[n].name << ": " << golfers[n].score - (tourneypar * (h+1)) << '\n';
+					} else if (golfers[n].score == (tourneypar*(h+2))) {
+						cout << golfers[n].name << ": E\n";
+					} else {
+						cout << golfers[n].name << ": +" << golfers[n].score - (tourneypar * (h+1)) << '\n';
+					}
+				}
+				cout << "\n";
+			}
+		}
+		
+		//This loop is for resetting the placed flag, must be applied to every golfer
+		for (int i = 0; i < golfernum; i++) {
+			golfers[i].placedflag = false;
+		}
+
+		//This loop is only for printing the scores of the top 10 golfers in a tournament if we're not simulating the 2020 Players
+		if ((tourneyprintflag == true) && (tourneyscores != 0)) {
+			for (int i = 0; i < 10; i++) {
+				if (h == 3) {
+					if (golfers[i].score < (tourneypar*(h+1))) {
+						cout << golfers[i].name << ": " << golfers[i].score - (tourneypar * (h+1)) << '\n';
+					} else if (golfers[i].score == (tourneypar*(h+1))) {
+						cout << golfers[i].name << ": E\n";
+					} else {
+						cout << golfers[i].name << ": +" << golfers[i].score - (tourneypar * (h+1)) << '\n';
+					}
+				}
+			}
+		}
+
+		shuffle(golfers, golfernum);
+	}
+
+	score_sort(golfers, golfernum);
+	tourneypodium[0] = golfers[0];
+	golfers[0].pgatourwins++;
+	if ((tourneynum == 24) || (tourneynum == 28) || (tourneynum == 33) || (tourneynum == 37)) {
+		golfers[0].majorswon++;
+		if (tourneynum == 24) {
+			golfers[0].masterswon++;
+		} else if (tourneynum == 28) {
+			golfers[0].pgaswon++;
+		} else if (tourneynum == 33) {
+			golfers[0].usopenswon++;
+		} else if (tourneynum == 37) {
+			golfers[0].openswon++;
+		}
+	}
+	tourneypodium[1] = golfers[1];
+	tourneypodium[2] = golfers[2];
+
+	if (tourneyprintflag == true) {
+		print_tourney_details(tourneypodium[0], year + 2020, tourneynum);
+		cout << tourneypodium[1].name << " comes in second place, and " << tourneypodium[2].name << " comes in third.\n\n";
+		cout << "-------------------------------\n";
+	}
+
+}
